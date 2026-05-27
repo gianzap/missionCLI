@@ -1,6 +1,12 @@
 package orbitsim.app;
 
+import orbitsim.exception.OrbitSimException;
+import orbitsim.mission.AscentPhase;
+import orbitsim.mission.LaunchPhase;
 import orbitsim.mission.MissionPhase;
+import orbitsim.mission.OrbitalPhase;
+import orbitsim.spacecraft.Spacecraft;
+import orbitsim.util.LogManager;
 
 import java.util.Scanner;
 import java.util.logging.Logger;
@@ -18,8 +24,8 @@ import static java.lang.Thread.sleep;
 
 
 public class MissionCLI {
-    private static final Logger LOG = Logger.getLogger(MissionCLI.class.getName());
 
+    static boolean missionRunning = false;
     //banner iniziale
     private static void printBanner() {
         System.out.println("""
@@ -28,9 +34,7 @@ public class MissionCLI {
                 ║         HORUS-21 MISSION CONTROL SYSTEM           ║
                 ║         OrbitSim v1.0 — Java SE Edition           ║
                 ╠═══════════════════════════════════════════════════╣
-                ║  Patterns: Factory · Composite · Iterator         ║
-                ║            Memento · Observer · Strategy          ║
-                ║            Chain of Responsibility                ║
+                ║                      test                         ║
                 ╚═══════════════════════════════════════════════════╝
                 
                   Type LAUNCH to begin mission sequence.
@@ -49,7 +53,8 @@ public class MissionCLI {
           printBanner();
 
 
-
+        //init logger
+        LogManager log = new LogManager("C:/Users/THINKPAD P17 G2/Desktop/logMission/mission.log");
 
         //inizializiamo scanner input utente
           Scanner scanner1 = new Scanner(System.in);
@@ -60,13 +65,7 @@ public class MissionCLI {
               try {
                   switch (command) {
                       case "LAUNCH":
-                          System.out.println("LAUNCH SEQUENCE IS STARTED!");
-
-                          System.out.println("ALL SYSTEM ARE CHECKED!");
-                          for (int i = 10;i > 0; i--){
-                              System.out.println(" countdown: "+i);
-                              sleep(1000);
-                          }
+                          launch(log);
                           break;
                       case "STATUS":
                           status();
@@ -102,12 +101,13 @@ public class MissionCLI {
                           report();
                           break;
                       case "ABORT":
-                          injectAnomaly();
+                          abort();
                           break;
                       case "HELP":
                           help();
                           break;
                       case "EXIT":
+                          exit(log);
                           return;
 
                       default:
@@ -125,6 +125,76 @@ public class MissionCLI {
 
 
 
+    }
+
+    private static void launch(LogManager log) throws OrbitSimException {
+
+        if (missionRunning) {
+            System.out.println("  Mission already in progress.");
+            log.appendLogWarn("Mission already in progress");
+            return;
+        }else{
+
+            System.out.println("LAUNCH SEQUENCE IS STARTED!");
+
+            System.out.println("ALL SYSTEM ARE CHECKED!");
+            for (int i = 10;i > 0; i--){
+                log.appendLogInfo("countdown "+ i);
+
+                try {
+                    sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            missionRunning = true;
+            System.out.println("Liftoff!We are taking off!");
+            log.appendLogInfo("Liftoff OK");
+        }
+
+
+
+
+    }
+
+    private static void exit(LogManager log){
+        log.closeLog();
+    }
+
+    private static void abort() {
+    }
+
+    private static void report() {
+    }
+
+    private static void reentry() {
+    }
+
+    private static void injectAnomaly() {
+    }
+
+    private static void restore() {
+    }
+
+    private static void scan() {
+    }
+
+    private static void listSnapshots() {
+    }
+
+    private static void snapshot() {
+    }
+
+    private static void maneuver() {
+    }
+
+    private static void systems() {
+    }
+
+    private static void telemetry() {
+    }
+
+    private static void status() {
     }
 
 
