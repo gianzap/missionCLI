@@ -106,7 +106,7 @@ public class MissionCLI {
                           report();
                           break;
                       case "ABORT":
-                          abort();
+                          abort(log);
                           break;
                       case "HELP":
                           help();
@@ -192,7 +192,11 @@ public class MissionCLI {
         System.out.println("\n  Mission Control offline. Goodbye.\n");
     }
 
-    private static void abort() {
+    private void abort(LogManager log) throws OrbitSimException {
+        System.out.println("\n  !!! ABORT COMMAND RECEIVED !!!");
+        transitionTo(new AbortPhase());
+        log.appendLogSevere("ABORT executed by operator");
+
     }
 
     private static void report() {
