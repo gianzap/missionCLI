@@ -25,7 +25,7 @@ public class SplashdownPhase implements MissionPhase{
     public String onEnter() {
         return "\n  *** SPLASHDOWN CONFIRMED ***\n" +
                 "  Recovery team en route.\n" +
-                "  ARES-VII mission: SUCCESS\n" +
+                "  HORUS-21 mission: SUCCESS\n" +
                 "  Mission elapsed time: see REPORT\n";
     }
 

@@ -1,12 +1,9 @@
 package orbitsim.app;
 
 //import packages
-import orbitsim.mission.AscentPhase;
-import orbitsim.mission.OrbitalPhase;
+import orbitsim.mission.*;
 import orbitsim.observer.MissionEventBus;
 import orbitsim.exception.OrbitSimException;
-import orbitsim.mission.LaunchPhase;
-import orbitsim.mission.MissionPhase;
 import orbitsim.observer.BlackBoxObserver;
 import orbitsim.observer.ConsoleAlertObserver;
 import orbitsim.spacecraft.Spacecraft;
@@ -34,6 +31,7 @@ public class MissionCLI {
 
     private static long missionStartMs;
     private MissionPhase currentPhase            = null;
+    Scanner scanner1 = new Scanner(System.in);
 
     //banner iniziale
     private static void printBanner() {
@@ -55,10 +53,7 @@ public class MissionCLI {
     public void main(String[] args) throws InterruptedException {
           System.out.print("System loading");
           //simulazione loading
-          for (int i =0;i < 10; i++){
-              System.out.print(" > ");
-              sleep(200);
-          }
+          loadingAnim();
           printBanner();
 
 
@@ -67,7 +62,7 @@ public class MissionCLI {
 
         //inizializiamo scanner input utente
 
-          Scanner scanner1 = new Scanner(System.in);
+
 
 
           while (true) {
@@ -121,6 +116,7 @@ public class MissionCLI {
                           String commandExit = scanner1.nextLine().toUpperCase();
                           if (commandExit.equals("YES")){
                               exit(log);
+                              scanner1.close();
                               return;
                           } else {
                               break;
@@ -137,7 +133,7 @@ public class MissionCLI {
 
 
               }
-              //scanner1.close();
+
           }
 
 
@@ -154,6 +150,7 @@ public class MissionCLI {
             log.appendLogWarn("Mission already in progress");
             return;
         }else{
+
             //transizione fase
             transitionTo(new LaunchPhase());
             //aggiornamento stato vettore
@@ -176,28 +173,23 @@ public class MissionCLI {
             missionRunning = true;
             System.out.println("Liftoff!We are taking off!");
             log.appendLogInfo("Liftoff OK");
-            for (int i =0;i < 10; i++){
-                System.out.print(">");
-                sleep(800);
-            }
+
+            loadingAnim();
+
             transitionTo(new AscentPhase());
             log.appendLogInfo("Ascent phase is started!");
-            for (int i =0;i < 10; i++){
-                System.out.print(">");
-                sleep(800);
-            }
+
+            loadingAnim();
+
             transitionTo(new OrbitalPhase());
-
         }
-
-
-
-
     }
 
     private static void exit(LogManager log){
         log.appendLogInfo("user shutdown the system with EXIT command");
         log.closeLog();
+
+        System.out.println("\n  Mission Control offline. Goodbye.\n");
     }
 
     private static void abort() {
@@ -206,7 +198,24 @@ public class MissionCLI {
     private static void report() {
     }
 
-    private static void reentry() {
+    private void reentry() {
+       try {
+           requirePhase(OrbitalPhase.class, "REENTRY requires orbital phase.");
+
+           loadingAnim();
+
+           transitionTo(new ReentryPhase());
+
+           loadingAnim();
+
+           transitionTo(new SplashdownPhase());
+
+       } catch (OrbitSimException e) {
+           System.err.println(e.getMessage());
+           return;
+
+       }
+
     }
 
     private static void injectAnomaly() {
@@ -265,8 +274,38 @@ public class MissionCLI {
     //gestione transizioni fase missione
     private void transitionTo(MissionPhase next) {
         if (currentPhase != null) System.out.println(currentPhase.onExit());  //se fase attuale non nulla stampo exit fase attuale
-        currentPhase = next;  //passo alla fase successiva
+        currentPhase = next; //passo alla fase successiva
+        loadingAnimShort();
         System.out.println(next.onEnter()); //stampo messaggio enter fase
+    }
+
+    //gestisco i requisiti di cambio fase e relative eccezioni
+    private void requirePhase(Class<? extends MissionPhase> phaseClass, String msg)
+            throws OrbitSimException {
+        if (currentPhase == null || !phaseClass.isInstance(currentPhase))
+            throw new OrbitSimException(msg + " Current phase: " +
+                    (currentPhase != null ? currentPhase.getName() : "PRE-LAUNCH"));
+    }
+
+    private void loadingAnim(){
+        for (int i =0;i < 10; i++){
+            System.out.print(">");
+            try {
+                sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+    private void loadingAnimShort(){
+        for (int i =0;i < 5; i++){
+            System.out.print(">");
+            try {
+                sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
 
