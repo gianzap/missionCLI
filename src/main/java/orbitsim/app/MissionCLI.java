@@ -109,7 +109,7 @@ public class MissionCLI {
                           injectAnomaly(argsCmd, log);
                           break;
                       case "REENTRY":
-                          reentry();
+                          reentry(log);
                           break;
                       case "ABORT":
                           abort(log);
@@ -139,6 +139,7 @@ public class MissionCLI {
 
 
               }
+
 
           }
 
@@ -176,6 +177,7 @@ public class MissionCLI {
                 }
             }
             missionRunning = true;
+            spacecraft.setLaunchState();
             missionStartMs = System.currentTimeMillis();
             System.out.println("Liftoff!We are taking off!");
             log.appendLogInfo("Liftoff OK");
@@ -183,11 +185,13 @@ public class MissionCLI {
             loadingAnim();
 
             transitionTo(new AscentPhase());
+            spacecraft.setAscentState();
             log.appendLogInfo("Ascent phase is started!");
 
             loadingAnim();
 
             transitionTo(new OrbitalPhase());
+            spacecraft.setOrbitalState();
             log.appendLogInfo("Orbital phase is reached!");
         }
     }
@@ -207,16 +211,18 @@ public class MissionCLI {
     }
 
 
-    private void reentry() {
+    private void reentry(LogManager log) {
        try {
            requirePhase("REENTRY requires orbital phase.");
 
-           loadingAnim();
 
+           loadingAnim();
+           log.appendLogInfo("user init reentry phase");
            transitionTo(new ReentryPhase());
+           spacecraft.setReentryState();
 
            loadingAnim();
-
+           log.appendLogInfo("enter in splashdown phase");
            transitionTo(new SplashdownPhase());
 
        } catch (OrbitSimException e) {

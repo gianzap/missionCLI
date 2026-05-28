@@ -88,7 +88,7 @@ public class Spacecraft {
                         """,
                 altitude, velocity, fuelPercent, reactorTemp, lifeSupport.getStatus());
     }
-    /** SYSTEMS command output — Composite in azione. */
+    /** SYSTEMS command output — Composite in azio ne. */
     public String getSystemsReport() {
         return "\n  ── SYSTEMS REPORT ──\n" + root.getStatusReport();
     }
