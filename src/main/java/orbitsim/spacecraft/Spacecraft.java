@@ -2,8 +2,8 @@ package orbitsim.spacecraft;
 
 
 import orbitsim.composite.SubSystem;
-import orbitsim.events.MissionEventBus;
-import orbitsim.patterns.composite.SpacecraftModule;
+import orbitsim.observer.MissionEventBus;
+
 
 /**
  * Navicella spaziale HORUS-21
@@ -21,26 +21,11 @@ public class Spacecraft {
     private double reactorTemp = 280.0;
     private int snapshotCounter = 1;
 
-    //composite root
-    private final SpacecraftModule root;
 
-    //subsystems - accesso diretto per simulazione
-    private final SubSystem propulsion, lifeSupport, navigation, comms, reactor, rcs;
-
-    private final MissionEventBus eventBus;
-
-    public Spacecraft(SubSystem propulsion, SubSystem lifeSupport, SubSystem navigation, SubSystem comms, SubSystem reactor, SubSystem rcs, MissionEventBus eventBus){
-        this.propulsion = propulsion; //PROPULSORE
-        this.lifeSupport = lifeSupport; //SUPPORTI VITALI
-        this.navigation = navigation;  //SISTEMA DI NAVIGAZIONE
-        this.comms = comms;  //SISTEMI DI COMUNICAZIONE
-        this.reactor = reactor; //REATTORE
-        this.rcs = rcs; // REACTION CONTROL SYSTEMS
-        this.eventBus = eventBus; //BUS EVENTI
-
-        //costruzione gerarchia Composite
-        root = new SpacecraftModule("ROOT", "HORUS-21 systems");
+    public Spacecraft(MissionEventBus eventBus) {
     }
 
 
+    public void setLaunchState() {
+    }
 }

@@ -1,17 +1,17 @@
 package orbitsim.app;
 
+//import packages
+import orbitsim.observer.MissionEventBus;
 import orbitsim.exception.OrbitSimException;
-import orbitsim.mission.AscentPhase;
 import orbitsim.mission.LaunchPhase;
 import orbitsim.mission.MissionPhase;
-import orbitsim.mission.OrbitalPhase;
+import orbitsim.observer.BlackBoxObserver;
+import orbitsim.observer.ConsoleAlertObserver;
 import orbitsim.spacecraft.Spacecraft;
 import orbitsim.util.LogManager;
 
 import java.util.Scanner;
-import java.util.logging.Logger;
 
-import static java.lang.Character.toUpperCase;
 import static java.lang.Thread.sleep;
 
 /**
@@ -24,8 +24,15 @@ import static java.lang.Thread.sleep;
 
 
 public class MissionCLI {
-
+    //instances
     static boolean missionRunning = false;
+    private final MissionEventBus eventBus      = new MissionEventBus();
+    private final BlackBoxObserver blackBox      = new BlackBoxObserver();
+    private final ConsoleAlertObserver console   = new ConsoleAlertObserver();
+
+    private static long missionStartMs;
+    private MissionPhase currentPhase            = null;
+
     //banner iniziale
     private static void printBanner() {
         System.out.println("""
@@ -43,7 +50,7 @@ public class MissionCLI {
     }
 
 
-    public static void main (String[]args) throws InterruptedException {
+    public void main(String[] args) throws InterruptedException {
           System.out.print("System loading");
           //simulazione loading
           for (int i =0;i < 10; i++){
@@ -54,9 +61,10 @@ public class MissionCLI {
 
 
         //init logger
-        LogManager log = new LogManager("C:/Users/THINKPAD P17 G2/Desktop/logMission/mission.log");
+        LogManager log = new LogManager("C:/Users/THINKPAD P17 G2/Desktop/logMission/HORUS-21-mission.log");
 
         //inizializiamo scanner input utente
+
           Scanner scanner1 = new Scanner(System.in);
 
 
@@ -127,8 +135,15 @@ public class MissionCLI {
 
     }
 
-    private static void launch(LogManager log) throws OrbitSimException {
+    private void launch(LogManager log) throws OrbitSimException {
+        //millis da inizio lancio
+        missionStartMs = System.currentTimeMillis();
 
+        //transizione fase
+        transitionTo(new LaunchPhase());
+        //aggiornamento stato vettore
+
+        //controllo input launch one time
         if (missionRunning) {
             System.out.println("  Mission already in progress.");
             log.appendLogWarn("Mission already in progress");
@@ -136,8 +151,10 @@ public class MissionCLI {
         }else{
 
             System.out.println("LAUNCH SEQUENCE IS STARTED!");
+            log.appendLogInfo("launch sequence is started by the user ");
 
-            System.out.println("ALL SYSTEM ARE CHECKED!");
+            System.out.println("ALL SYSTEMS HAVE BEEN CHECKED!");
+            log.appendLogInfo("all systems have been checked due to init launch phase");
             for (int i = 10;i > 0; i--){
                 log.appendLogInfo("countdown "+ i);
 
@@ -145,11 +162,13 @@ public class MissionCLI {
                     sleep(1000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
+
                 }
             }
             missionRunning = true;
             System.out.println("Liftoff!We are taking off!");
             log.appendLogInfo("Liftoff OK");
+
         }
 
 
@@ -158,6 +177,7 @@ public class MissionCLI {
     }
 
     private static void exit(LogManager log){
+        log.appendLogInfo("user shutdown the system with EXIT command");
         log.closeLog();
     }
 
@@ -221,6 +241,13 @@ public class MissionCLI {
         };
     }
 
+//------------------helpers---------------------------------
 
+    //gestione transizioni fase missione
+    private void transitionTo(MissionPhase next) {
+        if (currentPhase != null) System.out.println(currentPhase.onExit());  //se fase attuale non nulla stampo onexit fase attuale
+        currentPhase = next;  //passo alla fase successiva
+        System.out.println(next.onEnter()); //stampo onenter fase
+    }
 }
 
