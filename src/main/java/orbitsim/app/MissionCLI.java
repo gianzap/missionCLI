@@ -53,10 +53,11 @@ public class MissionCLI {
                 """);
     }
 
+    public static void main(String[] args) {
+        new MissionCLI().run();
+    }
 
-
-    void main(String[] args) {
-
+    private void run() {
 
         System.out.print("System loading");
         //simulazione loading
