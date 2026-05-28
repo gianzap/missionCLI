@@ -13,7 +13,7 @@ import java.util.List;
  * - COMPOSIZIONI di oggetti (SpacecraftModule — nodi, es. "Life Support")
  * <p>
  * STRUTTURA nel progetto:
- *   SpacecraftModule "ARES-VII Systems"  ← Composite root
+ *   SpacecraftModule "HORUS-21 Systems"  ← Composite root
  *     SpacecraftModule "Propulsion"       ← nodo intermedio
  *       Subsystem "Main Engine"           ← foglia
  *       Subsystem "Reactor Core"          ← foglia

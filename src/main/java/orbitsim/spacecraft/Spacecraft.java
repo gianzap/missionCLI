@@ -142,7 +142,7 @@ public class Spacecraft {
     public double getAltitude()      { return altitude; }
     public double getVelocity()      { return velocity; }
     public SpacecraftModule getRoot(){ return root; }
-    public String getName()          { //dichiarazione variabili
+    public String getName()          {
         return "HORUS-21"; }
 
 

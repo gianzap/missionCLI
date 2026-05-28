@@ -13,7 +13,7 @@ public class AbortPhase implements MissionPhase {
 
     @Override
     public String[] availableCommands() {
-        return new String[]{"STATUS", "HELP"};
+        return new String[]{"STATUS","REPORT", "HELP"};
     }
 
     @Override

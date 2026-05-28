@@ -5,6 +5,7 @@ import orbitsim.mission.*;
 import orbitsim.exception.OrbitSimException;
 import orbitsim.patterns.chain.*;
 import orbitsim.patterns.factory.AnomalyFactory;
+import orbitsim.patterns.observer.BlackBoxObserver;
 import orbitsim.patterns.observer.ConsoleAlertObserver;
 import orbitsim.patterns.observer.MissionEvent;
 import orbitsim.patterns.observer.MissionEventBus;
@@ -28,9 +29,10 @@ import static java.lang.Thread.sleep;
 
 public class MissionCLI {
     //instances
-    static boolean missionRunning = false;
+    boolean missionRunning = false;
     private final MissionEventBus eventBus      = new MissionEventBus();
-    private static MissionPhase currentPhase            = null;
+    private final BlackBoxObserver blackBox = new BlackBoxObserver();
+    private MissionPhase currentPhase            = null;
     private final Spacecraft spacecraft = new Spacecraft(eventBus);
     //init scanner input utente
     Scanner scanner1 = new Scanner(System.in);
@@ -50,7 +52,7 @@ public class MissionCLI {
                 ║         HORUS-21 MISSION CONTROL SYSTEM           ║
                 ║         OrbitSim v1.0 — Java SE Edition           ║
                 ╠═══════════════════════════════════════════════════╣
-                ║                      test                         ║
+                ║               "PER ASPERA AD ASTRA"               ║
                 ╚═══════════════════════════════════════════════════╝
                 
                   Type LAUNCH to begin mission sequence.
@@ -72,8 +74,9 @@ public class MissionCLI {
         //init logger
         LogManager log = new LogManager("logs/HORUS-21-mission.log");
 
-        // Registra gli observer all'EventBus
+        // Registra gli observer all' EventBus
         eventBus.subscribe(new ConsoleAlertObserver());
+        eventBus.subscribe(blackBox);
 
         anomalyPipeline = new DetectionHandler();
         anomalyPipeline.setNext(new AssessmentHandler())
@@ -108,7 +111,7 @@ public class MissionCLI {
                       case "SYSTEMS":
                           systems();
                           break;
-                      case "MANEUVER","MANEUVER REBOOST","MANEUVER HOHMANN":
+                      case "MANEUVER":
                           maneuver(argsCmd,log);
                           break;
                       case "SCAN":
@@ -125,6 +128,9 @@ public class MissionCLI {
                           break;
                       case "HELP":
                           help();
+                          break;
+                      case "REPORT":
+                          report();
                           break;
                       case "EXIT","QUIT":
                           System.out.println("IF YOU ARE SURE CONFIRM WRITE 'YES'");
@@ -147,6 +153,9 @@ public class MissionCLI {
                   System.out.println("Try to enter a new valid command");
 
 
+              }catch (OrbitSimException e) {
+                  // Exception Shielding: messaggio pulito, niente stack trace
+                  System.out.println("  [MISSION CONTROL] " + e.getMessage());
               }
 
 
@@ -274,7 +283,7 @@ public class MissionCLI {
             System.out.println("\n  !!! MISSION ABORT INITIATED !!!");
             transitionTo(new AbortPhase());
         } else {
-            System.out.println("\n  Anomaly contained. Snapshots PRE/POST saved for debriefing.");
+            System.out.println("\n  Anomaly contained");
         }
     }
 
@@ -361,6 +370,17 @@ public class MissionCLI {
 
     }
 
+    // nuovo metodo
+    private void report() {
+        boolean missionEnded = currentPhase instanceof SplashdownPhase
+                || currentPhase instanceof AbortPhase;
+        if (!missionEnded) {
+            System.out.println("  REPORT is available only after mission end.");
+            return;
+        }
+        System.out.println(blackBox.generateReport());
+    }
+
     private String commandDesc(String cmd){
         return switch (cmd) {
             case "STATUS" -> "Mission and phase overview";
@@ -371,18 +391,25 @@ public class MissionCLI {
             case "INJECT_ANOMALY" -> "Trigger anomaly [type] — Chain of Responsibility";
             case "REENTRY" -> "Begin reentry sequence";
             case "ABORT" -> "Emergency mission abort";
+            case "REPORT" -> "Full mission black box report";
             default -> "";
         };
     }
+
+
 
 //------------------helpers---------------------------------
 
     //gestione transizioni fase missione
     private void transitionTo(MissionPhase next) {
-        if (currentPhase != null) System.out.println(currentPhase.onExit());  //se fase attuale non nulla stampo exit fase attuale
-        currentPhase = next; //passo alla fase successiva
+        if (currentPhase != null && !currentPhase.canTransitionTo(next)) {
+            System.out.println("  Invalid phase transition: " + currentPhase.getName() + " → " + next.getName());
+            return;
+        }
+        if (currentPhase != null) System.out.println(currentPhase.onExit());
+        currentPhase = next;
         loadingAnimShort();
-        System.out.println(next.onEnter()); //stampo messaggio enter fase
+        System.out.println(next.onEnter());
     }
 
     //gestisco i requisiti di cambio fase e relative eccezioni
