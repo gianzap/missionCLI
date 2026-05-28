@@ -278,8 +278,17 @@ public class MissionCLI {
     }
 
 
-    private static void help() {
-
+    private void help() {
+        String phase = currentPhase != null ? currentPhase.getName() : "PRE-LAUNCH";
+        System.out.println("\n  ── AVAILABLE COMMANDS [" + phase + "] ──");
+        if (currentPhase == null) {
+            System.out.println("  LAUNCH         — Start HORUS-21 mission");
+        } else {
+            for (String c : currentPhase.availableCommands()) {
+                System.out.println("  " + padRight(c, 18) + commandDesc(c));
+            }
+        }
+        System.out.println("  EXIT           — Quit mission control");
 
     }
 
@@ -318,7 +327,7 @@ public class MissionCLI {
             throw new OrbitSimException(msg + " Current phase: " +
                     (currentPhase != null ? currentPhase.getName() : "PRE-LAUNCH"));
     }
-
+    //animazione caricamento lunga
     private void loadingAnim(){
         for (int i =0;i < 10; i++){
             System.out.print(">");
@@ -329,6 +338,7 @@ public class MissionCLI {
             }
         }
     }
+    //animazione caricamento corta
     private void loadingAnimShort(){
         for (int i =0;i < 5; i++){
             System.out.print(">");
@@ -338,6 +348,10 @@ public class MissionCLI {
                 throw new RuntimeException(e);
             }
         }
+    }
+    //formattazione help
+    private String padRight(String s, int n) {
+        return String.format("%-" + n + "s", s);
     }
 }
 
