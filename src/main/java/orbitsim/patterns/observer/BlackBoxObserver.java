@@ -41,39 +41,55 @@ public class BlackBoxObserver implements MissionObserver {
             return "\n  [BLACK BOX] No events recorded.\n";
         }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("\n  ╔══════════════════════════════════════════════════╗\n");
-        sb.append("  ║            HORUS-21 MISSION BLACK BOX            ║\n");
-        sb.append("  ╠══════════════════════════════════════════════════╣\n");
-        sb.append(String.format("  ║  Total events recorded: %-24d║\n", eventLog.size()));
-        sb.append("  ╠══════════════════════════════════════════════════╣\n");
+        int WIDTH = 72; // larghezza interna del box
+        String border    = "  ╔" + "═".repeat(WIDTH) + "╗\n";
+        String separator = "  ╠" + "═".repeat(WIDTH) + "╣\n";
+        String footer    = "  ╚" + "═".repeat(WIDTH) + "╝\n";
 
-        // Conta per severity
+        StringBuilder sb = new StringBuilder();
+        sb.append(border);
+        sb.append(center("HORUS-21 MISSION BLACK BOX", WIDTH)).append("\n");
+        sb.append(separator);
+        sb.append(row("Total events recorded: " + eventLog.size(), WIDTH));
+        sb.append(separator);
+
         long emergencies = count(MissionEvent.Severity.EMERGENCY);
         long criticals   = count(MissionEvent.Severity.CRITICAL);
         long warnings    = count(MissionEvent.Severity.WARNING);
         long infos       = count(MissionEvent.Severity.INFO);
 
-        sb.append(String.format("  ║  🚨 EMERGENCY : %-32d║\n", emergencies));
-        sb.append(String.format("  ║  ⚠️  CRITICAL  : %-32d║\n", criticals));
-        sb.append(String.format("  ║  ⚡ WARNING   : %-32d║\n", warnings));
-        sb.append(String.format("  ║  ℹ️  INFO      : %-32d║\n", infos));
-        sb.append("  ╠══════════════════════════════════════════════════╣\n");
-        sb.append("  ║  EVENT LOG                                       ║\n");
-        sb.append("  ╠══════════════════════════════════════════════════╣\n");
+        sb.append(row("🚨 EMERGENCY : " + emergencies, WIDTH));
+        sb.append(row("⚠️  CRITICAL  : " + criticals,  WIDTH));
+        sb.append(row("⚡ WARNING   : " + warnings,    WIDTH));
+        sb.append(row("ℹ️  INFO      : " + infos,       WIDTH));
+        sb.append(separator);
+        sb.append(row("EVENT LOG", WIDTH));
+        sb.append(separator);
 
-        // Stampa tutti gli eventi in ordine cronologico
         for (MissionEvent e : eventLog) {
             String time = e.timestamp().format(FMT);
-            String line = String.format("[%s] %-10s | %s",
-                    time, e.severity(), e.message());
-            // tronca se troppo lungo per il box
-            if (line.length() > 48) line = line.substring(0, 45) + "...";
-            sb.append(String.format("  ║  %-48s║\n", line));
+            String line = String.format("[%s] %-10s | %s", time, e.severity(), e.message());
+            // se supera la larghezza va a capo invece di troncare
+            while (line.length() > WIDTH - 2) {
+                sb.append(row(line.substring(0, WIDTH - 2), WIDTH));
+                line = "  " + line.substring(WIDTH - 2); // indenta il proseguimento
+            }
+            sb.append(row(line, WIDTH));
         }
 
-        sb.append("  ╚══════════════════════════════════════════════════╝\n");
+        sb.append(footer);
         return sb.toString();
+    }
+
+    // riga con padding a destra fino a WIDTH
+    private String row(String content, int width) {
+        return String.format("  ║  %-" + (width - 2) + "s║\n", content);
+    }
+
+    // testo centrato nella riga
+    private String center(String text, int width) {
+        int pad = (width - text.length()) / 2;
+        return "  ║" + " ".repeat(pad) + text + " ".repeat(width - pad - text.length()) + "║";
     }
 
     /** Restituisce una vista non modificabile del log — usata dai test. */

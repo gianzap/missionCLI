@@ -214,7 +214,7 @@ public class MissionCLI {
         }
     }
 
-    private static void exit(LogManager log){
+    private void exit(LogManager log){
         log.appendLogInfo("user shutdown the system with EXIT command");
         log.closeLog();
 
@@ -222,10 +222,13 @@ public class MissionCLI {
     }
 
     private void abort(LogManager log) throws OrbitSimException {
+        if (currentPhase == null) {
+            System.out.println("  Cannot ABORT before mission has started.");
+            return;
+        }
         System.out.println("\n  !!! ABORT COMMAND RECEIVED !!!");
         transitionTo(new AbortPhase());
         log.appendLogSevere("ABORT executed by operator");
-
     }
 
 
@@ -410,6 +413,13 @@ public class MissionCLI {
         currentPhase = next;
         loadingAnimShort();
         System.out.println(next.onEnter());
+
+        // Pubblica evento fase — BlackBoxObserver lo registra
+        eventBus.publish(new MissionEvent(
+                MissionEvent.EventType.PHASE_CHANGE,
+                "MISSION_CONTROL",
+                "Phase transition → " + next.getName(),
+                MissionEvent.Severity.INFO));
     }
 
     //gestisco i requisiti di cambio fase e relative eccezioni
