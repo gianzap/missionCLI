@@ -24,7 +24,6 @@ public class Spacecraft {
     private double velocity = 0;
     private double fuelPercent = 100.0;
     private double reactorTemp = 280.0;
-    private int snapshotCounter = 1;
 
 
     // Composite root
@@ -106,8 +105,6 @@ public class Spacecraft {
     }
 
 
-    private String getCurrentPhaseName() { return "ORBITAL"; }
-
     // Metodi per simulazione anomalie
     public void degradeSystem(String systemId) {
         findSubsystem(systemId).ifPresent(s -> {
@@ -138,21 +135,14 @@ public class Spacecraft {
     public void setReentryState() { altitude = 122;  velocity = 7900;  fuelPercent = 42;  }
 
     public SystemStatus getOverallStatus() { return root.getStatus(); }
-    public double getFuelPercent()   { return fuelPercent; }
+
     public double getAltitude()      { return altitude; }
-    public double getVelocity()      { return velocity; }
+
     public SpacecraftModule getRoot(){ return root; }
     public String getName()          {
         return "HORUS-21"; }
 
 
-    public int getSnapshotCounter() {
-        return snapshotCounter;
-    }
-
-    public void setSnapshotCounter(int snapshotCounter) {
-        this.snapshotCounter = snapshotCounter;
-    }
 
     public SpacecraftMemento saveMemento(String label) {
         // costruttore package-private: solo Spacecraft può chiamarlo

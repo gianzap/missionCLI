@@ -30,7 +30,7 @@ public class SpacecraftMemento {
     private final String label;
     private final LocalDateTime timestamp;
 
-    // costruttore package-private: solo Spacecraft può istanziarlo
+    // costruttore pubblico — istanziabile da Spacecraft (Originator) e dai test
     public SpacecraftMemento(double altitude, double velocity, double fuelPercent,
                       double reactorTemp, SystemStatus overallStatus, String label) {
         this.altitude      = altitude;
