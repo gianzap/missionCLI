@@ -1,6 +1,8 @@
 package orbitsim.app;
 
 //import packages
+import orbitsim.mission.AscentPhase;
+import orbitsim.mission.OrbitalPhase;
 import orbitsim.observer.MissionEventBus;
 import orbitsim.exception.OrbitSimException;
 import orbitsim.mission.LaunchPhase;
@@ -114,9 +116,16 @@ public class MissionCLI {
                       case "HELP":
                           help();
                           break;
-                      case "EXIT":
-                          exit(log);
-                          return;
+                      case "EXIT","QUIT":
+                          System.out.println("IF YOU ARE SURE CONFIRM WRITE 'YES'");
+                          String commandExit = scanner1.nextLine().toUpperCase();
+                          if (commandExit.equals("YES")){
+                              exit(log);
+                              return;
+                          } else {
+                              break;
+                          }
+
 
                       default:
                           throw new IllegalStateException("Unexpected value: " + command);
@@ -135,13 +144,9 @@ public class MissionCLI {
 
     }
 
-    private void launch(LogManager log) throws OrbitSimException {
-        //millis da inizio lancio
-        missionStartMs = System.currentTimeMillis();
+    private void launch(LogManager log) throws OrbitSimException, InterruptedException {
 
-        //transizione fase
-        transitionTo(new LaunchPhase());
-        //aggiornamento stato vettore
+
 
         //controllo input launch one time
         if (missionRunning) {
@@ -149,6 +154,9 @@ public class MissionCLI {
             log.appendLogWarn("Mission already in progress");
             return;
         }else{
+            //transizione fase
+            transitionTo(new LaunchPhase());
+            //aggiornamento stato vettore
 
             System.out.println("LAUNCH SEQUENCE IS STARTED!");
             log.appendLogInfo("launch sequence is started by the user ");
@@ -168,6 +176,17 @@ public class MissionCLI {
             missionRunning = true;
             System.out.println("Liftoff!We are taking off!");
             log.appendLogInfo("Liftoff OK");
+            for (int i =0;i < 10; i++){
+                System.out.print(">");
+                sleep(800);
+            }
+            transitionTo(new AscentPhase());
+            log.appendLogInfo("Ascent phase is started!");
+            for (int i =0;i < 10; i++){
+                System.out.print(">");
+                sleep(800);
+            }
+            transitionTo(new OrbitalPhase());
 
         }
 
@@ -245,9 +264,9 @@ public class MissionCLI {
 
     //gestione transizioni fase missione
     private void transitionTo(MissionPhase next) {
-        if (currentPhase != null) System.out.println(currentPhase.onExit());  //se fase attuale non nulla stampo onexit fase attuale
+        if (currentPhase != null) System.out.println(currentPhase.onExit());  //se fase attuale non nulla stampo exit fase attuale
         currentPhase = next;  //passo alla fase successiva
-        System.out.println(next.onEnter()); //stampo onenter fase
+        System.out.println(next.onEnter()); //stampo messaggio enter fase
     }
 }
 

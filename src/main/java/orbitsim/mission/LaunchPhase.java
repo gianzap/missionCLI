@@ -24,8 +24,7 @@ public class LaunchPhase implements MissionPhase{
     @Override
     public String onEnter() {
         return "\n  *** IGNITION SEQUENCE START ***\n" +
-                "  Main engines throttle up... 104%\n" +
-                "  Liftoff! We have liftoff of ARES-VII!\n";
+                "  Main engines throttle up... 104%\n";
     }
 
     @Override
