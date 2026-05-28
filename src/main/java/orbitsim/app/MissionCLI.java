@@ -188,6 +188,7 @@ public class MissionCLI {
             loadingAnim();
 
             transitionTo(new OrbitalPhase());
+            log.appendLogInfo("Orbital phase is reached!");
         }
     }
 

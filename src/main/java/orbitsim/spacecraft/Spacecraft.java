@@ -79,11 +79,11 @@ public class Spacecraft {
                 """
                         
                           ╔══════════════════ TELEMETRY ════════════════════╗
-                          ║  Altitude:     %6.1f km                         ║
-                          ║  Velocity:     %6.1f m/s                        ║
+                          ║  Altitude:     %6.1f km                        ║
+                          ║  Velocity:     %6.1f m/s                       ║
                           ║  Fuel:         %6.1f%%                          ║
-                          ║  Reactor:      %6.1f°C                          ║
-                          ║  Life Support: %-32s                            ║
+                          ║  Reactor:      %6.1f°C                         ║
+                          ║  Life Support: %-32s║
                           ╚═════════════════════════════════════════════════╝
                         """,
                 altitude, velocity, fuelPercent, reactorTemp, lifeSupport.getStatus());
