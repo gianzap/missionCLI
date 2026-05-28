@@ -13,7 +13,7 @@ public class OrbitalPhase implements MissionPhase{
 
     @Override
     public String[] availableCommands() {
-        return new String[]{"STATUS", "TELEMETRY", "SYSTEMS", "MANEUVER", "SCAN", "INJECT_ANOMALY", "REENTRY", "HELP"};
+        return new String[]{"STATUS", "TELEMETRY", "SYSTEMS", "MANEUVER", "SCAN","SNAPSHOT", "INJECT_ANOMALY", "REENTRY", "HELP"};
     }
 
     @Override

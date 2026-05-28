@@ -11,6 +11,8 @@ import orbitsim.patterns.observer.MissionEvent;
 import orbitsim.patterns.observer.MissionEventBus;
 import orbitsim.spacecraft.Spacecraft;
 import orbitsim.util.LogManager;
+import orbitsim.patterns.memento.MissionCaretaker;
+import orbitsim.patterns.memento.SpacecraftMemento;
 
 import java.util.Scanner;
 
@@ -32,6 +34,7 @@ public class MissionCLI {
     boolean missionRunning = false;
     private final MissionEventBus eventBus      = new MissionEventBus();
     private final BlackBoxObserver blackBox = new BlackBoxObserver();
+    private final MissionCaretaker caretaker = new MissionCaretaker();
     private MissionPhase currentPhase            = null;
     private final Spacecraft spacecraft = new Spacecraft(eventBus);
     //init scanner input utente
@@ -131,6 +134,9 @@ public class MissionCLI {
                           break;
                       case "REPORT":
                           report();
+                          break;
+                      case "SNAPSHOT":
+                          snapshot();
                           break;
                       case "EXIT","QUIT":
                           System.out.println("IF YOU ARE SURE CONFIRM WRITE 'YES'");
@@ -262,11 +268,13 @@ public class MissionCLI {
             return;
         }
 
-        // Factory crea il contesto anomalia
+        // Snapshot PRE-anomalia — Memento
+        SpacecraftMemento pre = spacecraft.saveMemento("PRE-" + type);
+        caretaker.save(pre);
+        System.out.println("  [MEMENTO] Pre-anomaly snapshot saved.");
+
         AnomalyContext ctx = AnomalyFactory.create(type);
 
-
-        // Observer notifica
         eventBus.publish(new MissionEvent(
                 MissionEvent.EventType.ANOMALY, ctx.getSourceSystem(),
                 ctx.getAnomalyType() + " — Severity " + ctx.getSeverity(),
@@ -276,8 +284,12 @@ public class MissionCLI {
         System.out.println("  " + ctx.getAnomalyType());
         System.out.println("  ╚═══════════════════════════════════════╝");
 
-        // Chain of Responsibility in azione — visibile step per step
         anomalyPipeline.handle(ctx);
+
+        // Snapshot POST-anomalia — Memento
+        SpacecraftMemento post = spacecraft.saveMemento("POST-" + type);
+        caretaker.save(post);
+        System.out.println("  [MEMENTO] Post-anomaly snapshot saved.");
 
         log.appendLogWarn("Anomaly handled: " + ctx.getAnomalyType() +
                 " — actions: " + ctx.getActionLog().size());
@@ -286,7 +298,7 @@ public class MissionCLI {
             System.out.println("\n  !!! MISSION ABORT INITIATED !!!");
             transitionTo(new AbortPhase());
         } else {
-            System.out.println("\n  Anomaly contained");
+            System.out.println("\n  Anomaly contained. PRE/POST snapshots saved.");
         }
     }
 
@@ -373,7 +385,6 @@ public class MissionCLI {
 
     }
 
-    // nuovo metodo
     private void report() {
         boolean missionEnded = currentPhase instanceof SplashdownPhase
                 || currentPhase instanceof AbortPhase;
@@ -382,6 +393,26 @@ public class MissionCLI {
             return;
         }
         System.out.println(blackBox.generateReport());
+
+        // Snapshot history — Memento
+        if (!caretaker.isEmpty()) {
+            System.out.println("\n  ── SNAPSHOT HISTORY ──");
+            for (SpacecraftMemento m : caretaker.getAll()) {
+                System.out.println(m.getReport());
+            }
+        }
+    }
+
+    private void snapshot() {
+        if (!missionRunning) {
+            System.out.println("  No active mission to snapshot.");
+            return;
+        }
+        String label = "SNAP-" + (caretaker.size() + 1);
+        SpacecraftMemento m = spacecraft.saveMemento(label);
+        caretaker.save(m);
+        System.out.println("  Snapshot saved: " + label);
+        System.out.println(m.getReport());
     }
 
     private String commandDesc(String cmd){
@@ -395,6 +426,7 @@ public class MissionCLI {
             case "REENTRY" -> "Begin reentry sequence";
             case "ABORT" -> "Emergency mission abort";
             case "REPORT" -> "Full mission black box report";
+            case "SNAPSHOT" -> "Save spacecraft state snapshot — Memento";
             default -> "";
         };
     }

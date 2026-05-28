@@ -8,7 +8,7 @@ import orbitsim.patterns.composite.Subsystem;
 import orbitsim.patterns.composite.SystemStatus;
 import orbitsim.patterns.observer.MissionEvent;
 import orbitsim.patterns.observer.MissionEventBus;
-
+import orbitsim.patterns.memento.SpacecraftMemento;
 import java.util.*;
 
 /**
@@ -88,7 +88,7 @@ public class Spacecraft {
                         """,
                 altitude, velocity, fuelPercent, reactorTemp, lifeSupport.getStatus());
     }
-    /** SYSTEMS command output — Composite in azio ne. */
+    /** SYSTEMS command output — Composite in azione. */
     public String getSystemsReport() {
         return "\n  ── SYSTEMS REPORT ──\n" + root.getStatusReport();
     }
@@ -152,5 +152,12 @@ public class Spacecraft {
 
     public void setSnapshotCounter(int snapshotCounter) {
         this.snapshotCounter = snapshotCounter;
+    }
+
+    public SpacecraftMemento saveMemento(String label) {
+        // costruttore package-private: solo Spacecraft può chiamarlo
+        return new SpacecraftMemento(
+                altitude, velocity, fuelPercent,
+                reactorTemp, getOverallStatus(), label);
     }
 }
