@@ -3,8 +3,7 @@ package orbitsim.app;
 //import packages
 import orbitsim.mission.*;
 import orbitsim.exception.OrbitSimException;
-import orbitsim.patterns.chain.AnomalyContext;
-import orbitsim.patterns.chain.AnomalyHandler;
+import orbitsim.patterns.chain.*;
 import orbitsim.patterns.factory.AnomalyFactory;
 import orbitsim.patterns.observer.MissionEvent;
 import orbitsim.patterns.observer.MissionEventBus;
@@ -56,7 +55,7 @@ public class MissionCLI {
 
 
 
-    void main() {
+    void main(String[] args) {
 
 
         System.out.print("System loading");
@@ -67,7 +66,11 @@ public class MissionCLI {
         //init logger
         LogManager log = new LogManager("C:/Users/THINKPAD P17 G2/Desktop/logMission/HORUS-21-mission.log");
 
-
+        anomalyPipeline = new DetectionHandler();
+        anomalyPipeline.setNext(new AssessmentHandler())
+                .setNext(new IsolationHandler())
+                .setNext(new NotificationHandler())
+                .setNext(new EscalationHandler());
 
           while (true) {
               System.out.print("\n  MISSION CONTROL> ");
