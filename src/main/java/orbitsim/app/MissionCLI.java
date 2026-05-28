@@ -5,6 +5,7 @@ import orbitsim.mission.*;
 import orbitsim.exception.OrbitSimException;
 import orbitsim.patterns.chain.*;
 import orbitsim.patterns.factory.AnomalyFactory;
+import orbitsim.patterns.observer.ConsoleAlertObserver;
 import orbitsim.patterns.observer.MissionEvent;
 import orbitsim.patterns.observer.MissionEventBus;
 import orbitsim.spacecraft.Spacecraft;
@@ -19,6 +20,8 @@ import static java.lang.Thread.sleep;
  * Integra tutti i pattern: Strategy (fasi), Observer (alert),
  * Chain (anomalie), Memento (snapshot), Factory (anomalie),
  * Composite (sistemi), Iterator (scan).
+ * @author Zappalà Gianluca
+ * @version 1.0
  */
 
 
@@ -31,6 +34,8 @@ public class MissionCLI {
     private final Spacecraft spacecraft = new Spacecraft(eventBus);
     //init scanner input utente
     Scanner scanner1 = new Scanner(System.in);
+
+
 
     private long missionStartMs;
     //chain of responsibility
@@ -66,6 +71,9 @@ public class MissionCLI {
 
         //init logger
         LogManager log = new LogManager("logs/HORUS-21-mission.log");
+
+        // Registra gli observer all'EventBus
+        eventBus.subscribe(new ConsoleAlertObserver());
 
         anomalyPipeline = new DetectionHandler();
         anomalyPipeline.setNext(new AssessmentHandler())
@@ -227,7 +235,7 @@ public class MissionCLI {
            transitionTo(new SplashdownPhase());
 
        } catch (OrbitSimException e) {
-           System.err.println(e.getMessage());
+           System.out.println(e.getMessage());
 
        }
 

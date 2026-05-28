@@ -19,7 +19,7 @@ import java.util.*;
 
 public class Spacecraft {
 
-    public final MissionEventBus eventBus;
+    private final MissionEventBus eventBus;
     private double altitude = 0;
     private double velocity = 0;
     private double fuelPercent = 100.0;
