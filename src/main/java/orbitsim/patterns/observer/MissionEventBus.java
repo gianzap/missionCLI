@@ -8,14 +8,14 @@ import java.util.logging.Logger;
  * ═══════════════════════════════════════════════════════════════
  * PATTERN: Observer — EventBus (Publisher)
  * ═══════════════════════════════════════════════════════════════
- *
+ * <p>
  * Il Publisher centrale: quando viene pubblicato un evento,
  * tutti i subscriber (Observer) vengono notificati automaticamente.
- *
+ * <p>
  * SUBSCRIBER nel progetto:
  *   - ConsoleAlertObserver → stampa alert a video
- *   - BlackBoxObserver     → registra per il report finale
- *
+ *   - BlackBoxObserver → registra per il report finale
+ * <p>
  * PERCHÉ Observer invece di chiamate dirette?
  * Senza Observer, AnomalyHandler dovrebbe conoscere e chiamare
  * direttamente console.alert(), blackBox.record(), ecc.
@@ -42,19 +42,19 @@ public class MissionEventBus {
 
     /**
      * Rimuove un observer.
-     * Utile se un subscriber vuole smettere di ascoltare (es. sistema offline).
+     * Utile se un subscriber vuole smettere di ascoltare (es. Sistema offline).
      */
     public void unsubscribe(MissionObserver o) { observers.remove(o); }
 
     /**
      * Pubblica un evento a TUTTI gli observer.
-     *
+     * <p>
      * Il try-catch DENTRO il for è intenzionale e fondamentale:
-     * se un observer crasha, gli altri devono comunque ricevere l'evento.
+     * se un observer crash, gli altri devono comunque ricevere l'evento.
      * Esempio: ConsoleAlertObserver lancia NullPointerException →
      *          BlackBoxObserver riceve comunque l'evento e lo registra.
      * Questo è resilienza — un singolo punto di fallimento non blocca il sistema.
-     *
+     * <p>
      * L'eccezione viene loggata internamente (Exception Shielding):
      * l'utente non vede lo stack trace, solo il log interno.
      */

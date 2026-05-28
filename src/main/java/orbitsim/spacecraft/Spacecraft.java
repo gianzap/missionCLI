@@ -14,7 +14,7 @@ import java.util.*;
 /**
  * Navicella spaziale HORUS-21
  * gestisce lo stato fisico e i moduli compositi
- * Z G 2026 epicode
+ * Z G 2026 Epicode
  */
 
 public class Spacecraft {
@@ -65,7 +65,7 @@ public class Spacecraft {
         root.add(avionics);
 
     }
-    /** Aggiorna telemetria simulata ad ogni ciclo. */
+    /** Aggiorna telemetria simulata a ogni ciclo. */
     public void tick() {
         // Deriva naturale valori
         fuelPercent = Math.max(0, fuelPercent - 0.1);
@@ -76,20 +76,21 @@ public class Spacecraft {
     /** TELEMETRY command output. */
     public String getTelemetry() {
         return String.format(
-                "\n  ╔══════════════════ TELEMETRY ════════════════════╗\n" +
-                        "  ║  Altitude:     %6.1f km                        ║\n" +
-                        "  ║  Velocity:     %6.1f m/s                       ║\n" +
-                        "  ║  Fuel:         %6.1f%%                          ║\n" +
-                        "  ║  Reactor:      %6.1f°C                         ║\n" +
-                        "  ║  Life Support: %-32s ║\n" +
-                        "  ╚═════════════════════════════════════════════════╝\n",
+                """
+                        
+                          ╔══════════════════ TELEMETRY ════════════════════╗
+                          ║  Altitude:     %6.1f km                         ║
+                          ║  Velocity:     %6.1f m/s                        ║
+                          ║  Fuel:         %6.1f%%                          ║
+                          ║  Reactor:      %6.1f°C                          ║
+                          ║  Life Support: %-32s                            ║
+                          ╚═════════════════════════════════════════════════╝
+                        """,
                 altitude, velocity, fuelPercent, reactorTemp, lifeSupport.getStatus());
     }
     /** SYSTEMS command output — Composite in azione. */
     public String getSystemsReport() {
-        StringBuilder sb = new StringBuilder("\n  ── SYSTEMS REPORT ──\n");
-        sb.append(root.getStatusReport());
-        return sb.toString();
+        return "\n  ── SYSTEMS REPORT ──\n" + root.getStatusReport();
     }
 
     /** Iterator pattern: scansiona tutti i subsystem. */

@@ -2,10 +2,10 @@ package orbitsim.patterns.chain;
 
 /**
  * Handler 2/5 della pipeline — ASSESSMENT.
- *
+ * <p>
  * Responsabilità unica: valutare l'impatto dell'anomalia
  * sui sistemi correlati e aggiornare la severity se necessario.
- *
+ * <p>
  * REACTOR e LIFE_SUPPORT sono sistemi critici per la sopravvivenza —
  * un guasto su di essi è automaticamente più grave di quanto
  * la severity iniziale suggerisca.

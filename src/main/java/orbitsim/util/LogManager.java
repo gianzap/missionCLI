@@ -25,7 +25,7 @@ public class LogManager {
             handler = new FileHandler(filename, true);
             handler.setFormatter(new SimpleFormatter());
             LOG.addHandler(handler);
-            LOG.setUseParentHandlers(false); // evita uscita duplicato sulla console
+            //LOG.setUseParentHandlers(false); // evita uscita duplicato sulla console
 
         } catch (IOException e) {
             // Exception Shielding: non esponiamo lo stack trace all'utente

@@ -6,14 +6,14 @@ package orbitsim.patterns.chain;
  * ═══════════════════════════════════════════════════════════════
  * Definisce la struttura della catena. Ogni handler concreto
  * si occupa di UNA sola responsabilità (Single Responsibility Principle).
- *
+ * <p>
  * Pipeline usata nel progetto:
  *   DetectionHandler
  *     → AssessmentHandler
  *       → IsolationHandler
  *         → NotificationHandler
  *           → EscalationHandler
- *
+ * <p>
  * Vantaggi vs if/else o switch:
  * - Aggiungere un handler non modifica gli esistenti (Open/Closed)
  * - Ogni handler è testabile indipendentemente
@@ -22,7 +22,7 @@ package orbitsim.patterns.chain;
 public abstract class AnomalyHandler {
 
     // Riferimento al prossimo handler nella catena.
-    // null se questo è l'ultimo della pipeline.
+    // Null se questo è l'ultimo della pipeline.
     protected AnomalyHandler next;
 
     /**
@@ -39,12 +39,12 @@ public abstract class AnomalyHandler {
 
     /**
      * TEMPLATE METHOD PATTERN — questo metodo è final.
-     *
-     * 'final' significa che NESSUNA sottoclasse può sovrascriverlo.
+     * <p>
+     * 'Final' significa che NESSUNA sottoclasse può sovrascriverlo.
      * Questo è essenziale: la struttura della catena (chiama process,
      * poi passa al successivo) NON deve cambiare tra gli handler.
      * Solo il CONTENUTO (process) varia — è il "hook" del Template Method.
-     *
+     * <p>
      * Flusso garantito per ogni handler:
      *   1. Esegui la logica di questo handler (process)
      *   2. Se non abortita la missione, passa al successivo
@@ -58,11 +58,11 @@ public abstract class AnomalyHandler {
 
     /**
      * Il "hook" del Template Method.
-     * abstract = nessuna implementazione qui, OBBLIGATORIA nelle sottoclassi.
+     * Abstract = nessuna implementazione qui, OBBLIGATORIA nelle sottoclassi.
      * Ogni sottoclasse implementa solo la propria responsabilità.
      */
     protected abstract void process(AnomalyContext ctx);
 
-    /** Nome dell'handler per logging e debug. */
+    /** Nome dell' handler per logging e debug. */
     public abstract String getHandlerName();
 }

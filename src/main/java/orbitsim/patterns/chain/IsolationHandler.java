@@ -2,10 +2,10 @@ package orbitsim.patterns.chain;
 
 /**
  * Handler 3/5 della pipeline — ISOLATION.
- *
+ * <p>
  * Responsabilità unica: isolare il sistema guasto
  * per evitare che il guasto si propaghi ad altri sistemi.
- *
+ * <p>
  * Solo severity >= 3 richiede isolamento fisico.
  * Severity 1-2 = monitoraggio, nessuna azione invasiva.
  */
@@ -16,7 +16,7 @@ public class IsolationHandler extends AnomalyHandler {
         System.out.println("  [CHAIN 3/5] ISOLATION");
 
         if (ctx.getSeverity() >= 3) {
-            // Isola il sistema: disconnette dal bus principale
+            // Isola il sistema: disconnesso dal bus principale
             ctx.logAction("Isolating " + ctx.getSourceSystem() + " from main bus");
             ctx.logAction("Backup system engaged"); // attiva il sistema di riserva
 

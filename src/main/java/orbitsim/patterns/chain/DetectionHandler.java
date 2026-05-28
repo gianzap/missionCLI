@@ -2,19 +2,19 @@ package orbitsim.patterns.chain;
 
 /**
  * Handler 1/5 della pipeline — DETECTION.
- *
+ * <p>
  * Responsabilità unica (Single Responsibility):
  * rilevare e classificare l'anomalia.
- *
- * Non isola, non notifica, non aborta —
+ * <p>
+ * Non isola, non notifica, non abort —
  * fa solo il rilevamento. Tutto il resto è degli handler successivi.
  */
 public class DetectionHandler extends AnomalyHandler {
 
     /**
      * Implementa il hook astratto di AnomalyHandler.
-     * @Override segnala al compilatore che stiamo sovrascrivendo
-     * un metodo della superclasse — errore di compilazione se il nome è sbagliato.
+     * @ Override segnala al compilatore che stiamo sovrascrivendo
+     * un metodo della superclass — errore di compilazione se il nome è sbagliato.
      */
     @Override
     protected void process(AnomalyContext ctx) {

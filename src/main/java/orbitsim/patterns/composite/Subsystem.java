@@ -5,12 +5,12 @@ import java.util.List;
 
 /**
  * PATTERN: Composite — Leaf (Foglia)
- *
+ * <p>
  * Rappresenta un singolo sottosistema fisico della navicella.
  * Non ha figli — è il nodo terminale dell'albero Composite.
- *
+ * <p>
  * Esempi: "O2 Recycler", "Main Engine", "Navigation Computer"
- *
+ * <p>
  * Tiene traccia di:
  * - status: stato corrente (NOMINAL/DEGRADED/CRITICAL/OFFLINE)
  * - value: valore corrente del sensore principale (temperatura, pressione, ecc.)

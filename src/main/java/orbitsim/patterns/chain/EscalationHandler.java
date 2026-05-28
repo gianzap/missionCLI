@@ -2,10 +2,10 @@ package orbitsim.patterns.chain;
 
 /**
  * Handler 5/5 della pipeline — ESCALATION.
- *
+ * <p>
  * Responsabilità unica: decidere se la situazione
- * richiede l'abort della missione.
- *
+ * richiede l' abort della missione.
+ * <p>
  * Severity 5 = impossibile continuare in sicurezza.
  * È l'unico handler che può chiamare ctx.abortMission().
  * Una volta abortita, AnomalyHandler.handle() non passa
