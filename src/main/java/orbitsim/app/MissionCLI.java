@@ -3,6 +3,7 @@ package orbitsim.app;
 //import packages
 import orbitsim.mission.*;
 import orbitsim.exception.OrbitSimException;
+import orbitsim.patterns.observer.MissionEvent;
 import orbitsim.patterns.observer.MissionEventBus;
 import orbitsim.spacecraft.Spacecraft;
 import orbitsim.util.LogManager;
@@ -97,7 +98,7 @@ public class MissionCLI {
                           scan(log);
                           break;
                       case "INJECT_ANOMALY":
-                          injectAnomaly();
+                          injectAnomaly(argsCmd);
                           break;
                       case "REENTRY":
                           reentry();
@@ -198,7 +199,7 @@ public class MissionCLI {
 
     private void reentry() {
        try {
-           requirePhase("REENTRY requires orbital phase.");
+           requirePhase(OrbitalPhase.class, "REENTRY requires orbital phase.");
 
            loadingAnim();
 
@@ -215,7 +216,48 @@ public class MissionCLI {
 
     }
 
-    private static void injectAnomaly() {
+    private void injectAnomaly(String[] args) throws OrbitSimException {
+        requirePhase(OrbitalPhase.class, "Anomaly injection available in ORBITAL phase only.");
+        String type = args.length > 0 ? args[0] : "";
+        if (type.isBlank()) {
+            System.out.println("  Usage: INJECT_ANOMALY <type>");
+            System.out.println("  Types: " + AnomalyFactory.listTypes());
+            return;
+        }
+
+        // Factory crea il contesto anomalia
+        AnomalyContext ctx = AnomalyFactory.create(type);
+
+        // Snapshot PRE-anomalia (Memento)
+        var snapPre = spacecraft.takeSnapshot("PRE-" + type, "Auto-snapshot before anomaly response");
+        snapshots.save(snapPre);
+
+        // Observer notifica
+        eventBus.publish(new MissionEvent(
+                MissionEvent.EventType.ANOMALY, ctx.getSourceSystem(),
+                ctx.getAnomalyType() + " — Severity " + ctx.getSeverity(),
+                ctx.getSeverity() >= 4 ? MissionEvent.Severity.EMERGENCY : MissionEvent.Severity.CRITICAL));
+
+        System.out.println("\n  ╔══════ ANOMALY RESPONSE PROTOCOL ══════╗");
+        System.out.println("  " + ctx.getAnomalyType());
+        System.out.println("  ╚═══════════════════════════════════════╝");
+
+        // Chain of Responsibility in azione — visibile step per step
+        anomalyPipeline.handle(ctx);
+
+        missionLogger.log("Anomaly handled: " + ctx.getAnomalyType() +
+                " — actions: " + ctx.getActionLog().size());
+
+        if (ctx.isMissionAborted()) {
+            System.out.println("\n  !!! MISSION ABORT INITIATED !!!");
+            transitionTo(new AbortPhase());
+        } else {
+            // Snapshot POST-anomalia (Memento)
+            var snapPost = spacecraft.takeSnapshot("POST-" + type,
+                    "Post-anomaly response — " + ctx.getActionLog().size() + " actions taken");
+            snapshots.save(snapPost);
+            System.out.println("\n  Anomaly contained. Snapshots PRE/POST saved for debriefing.");
+        }
     }
 
     private  void scan(LogManager log) {
@@ -239,7 +281,7 @@ public class MissionCLI {
 
 
     private void maneuver(String[] args, LogManager log) throws OrbitSimException {
-        requirePhase("MANEUVER requires orbital phase.");
+        requirePhase(OrbitalPhase.class, "MANEUVER requires orbital phase.");
         String type = args.length > 0 ? args[0].toUpperCase() : "HOHMANN";
         switch (type) {
             case "HOHMANN" -> {
@@ -310,7 +352,6 @@ public class MissionCLI {
             case "SCAN" -> "Iterator scan of all subsystems";
             case "INJECT_ANOMALY" -> "Trigger anomaly [type] — Chain of Responsibility";
             case "REENTRY" -> "Begin reentry sequence";
-            // todo case "REPORT" -> "Full mission report + save to file";
             case "ABORT" -> "Emergency mission abort";
             default -> "";
         };
@@ -327,7 +368,7 @@ public class MissionCLI {
     }
 
     //gestisco i requisiti di cambio fase e relative eccezioni
-    private void requirePhase(String msg)
+    private void requirePhase(Class<OrbitalPhase> orbitalPhaseClass, String msg)
             throws OrbitSimException {
         if (!(currentPhase instanceof OrbitalPhase))
             throw new OrbitSimException(msg + " Current phase: " +
