@@ -272,11 +272,10 @@ public class MissionCLI {
         }
     }
 
-    private static void systems() {
-    }
+    private void telemetry() { System.out.println(spacecraft.getTelemetry()); }
 
-    private static void telemetry() {
-    }
+    private void systems() { System.out.println(spacecraft.getSystemsReport()); }
+
 
     private void status() {
         String phase = currentPhase != null ? currentPhase.getName() : "PRE-LAUNCH";
@@ -319,13 +318,10 @@ public class MissionCLI {
             case "TELEMETRY" -> "Live sensor readings";
             case "SYSTEMS" -> "Composite system hierarchy";
             case "MANEUVER" -> "Execute orbital maneuver [HOHMANN|REBOOST]";
-            case "SNAPSHOT" -> "Save mission state (Memento)";
-            case "SNAPSHOTS" -> "List all saved snapshots";
-            case "RESTORE" -> "View snapshot [ID]";
             case "SCAN" -> "Iterator scan of all subsystems";
             case "INJECT_ANOMALY" -> "Trigger anomaly [type] — Chain of Responsibility";
             case "REENTRY" -> "Begin reentry sequence";
-            case "REPORT" -> "Full mission report + save to file";
+            // todo case "REPORT" -> "Full mission report + save to file";
             case "ABORT" -> "Emergency mission abort";
             default -> "";
         };
