@@ -65,7 +65,18 @@ public class MissionCLI {
 
 
           while (true) {
-              String command = scanner1.nextLine().toUpperCase();
+              System.out.print("\n  MISSION CONTROL> ");
+
+              // 1. Leggi l'input e dividilo in parole usando lo spazio come separatore
+              String completeInput = scanner1.nextLine().trim();
+              String[] parts = completeInput.split("\\s+"); // Divide la stringa ad ogni spazio
+
+              // 2. La prima parola è il comando reale (es: "MANEUVER")
+              String command = parts[0].toUpperCase();
+
+              // 3. Creiamo l'array 'args' con le parole successive (es: "REBOOST")
+              String[] argsCmd = new String[parts.length - 1];
+              System.arraycopy(parts, 1, argsCmd, 0, argsCmd.length);
               try {
                   switch (command) {
                       case "LAUNCH":
@@ -80,12 +91,12 @@ public class MissionCLI {
                       case "SYSTEMS":
                           systems();
                           break;
-                      case "MANEUVER":
-                          maneuver();
+                      case "MANEUVER","MANEUVER REBOOST","MANEUVER HOHMANN":
+                          maneuver(argsCmd,log);
                           break;
-                      case "SNAPSHOT":
-                          snapshot();
-                          break;
+//                      case "SNAPSHOT":
+//                          snapshot();
+//                          break;
                       case "SNAPSHOTS":
                           listSnapshots();
                           break;
@@ -237,7 +248,24 @@ public class MissionCLI {
     private static void snapshot() {
     }
 
-    private static void maneuver() {
+    private void maneuver(String[] args, LogManager log) throws OrbitSimException {
+        requirePhase(OrbitalPhase.class, "MANEUVER requires orbital phase.");
+        String type = args.length > 0 ? args[0].toUpperCase() : "HOHMANN";
+        switch (type) {
+            case "HOHMANN" -> {
+                System.out.println("\n  Executing Hohmann transfer burn...");
+                loadingAnimShort();
+                System.out.println("  Delta-V applied: +28 m/s");
+                System.out.println("  New altitude: 420 km — nominal");
+                log.appendLogInfo("Hohmann transfer executed");
+
+            }
+            case "REBOOST" -> {
+                System.out.println("\n  Reboost burn: +12 m/s");
+                log.appendLogInfo("Reboost executed");
+            }
+            default -> System.out.println("  Unknown maneuver. Available: HOHMANN, REBOOST");
+        }
     }
 
     private static void systems() {
