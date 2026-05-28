@@ -94,7 +94,7 @@ public class MissionCLI {
                           maneuver(argsCmd,log);
                           break;
                       case "SCAN":
-                          scan();
+                          scan(log);
                           break;
                       case "INJECT_ANOMALY":
                           injectAnomaly();
@@ -218,7 +218,22 @@ public class MissionCLI {
     private static void injectAnomaly() {
     }
 
-    private static void scan() {
+    private  void scan(LogManager log) {
+        System.out.println("\n  ── FULL SYSTEM SCAN ──");
+        // Iterator pattern in azione
+        var it = spacecraft.systemIterator();
+        int ok = 0, warn = 0, crit = 0;
+        while (it.hasNext()) {
+            var sys = it.next();
+            System.out.print("  " + sys.getStatusReport());
+            switch (sys.getStatus()) {
+                case NOMINAL  -> ok++;
+                case DEGRADED -> warn++;
+                case CRITICAL, OFFLINE -> crit++;
+            }
+        }
+        System.out.printf("\n  Summary: %d nominal, %d degraded, %d critical\n", ok, warn, crit);
+        log.appendLogInfo("System scan: " + ok + " OK, " + warn + " warn, " + crit + " crit");
     }
 
 
