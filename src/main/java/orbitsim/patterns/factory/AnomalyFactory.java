@@ -7,21 +7,21 @@ import orbitsim.patterns.chain.AnomalyContext;
  * ═══════════════════════════════════════════════════════════════
  * PATTERN: Factory Method
  * ═══════════════════════════════════════════════════════════════
- *
+ * <p>
  * Crea oggetti AnomalyContext con i parametri corretti
  * per ogni tipo di anomalia, nascondendo questa logica al CLI.
- *
+ * <p>
  * SENZA Factory, il CLI dovrebbe:
  *   if (type.equals("REACTOR")) ctx = new AnomalyContext("Reactor spike","REACTOR_CORE",4);
  *   else if (type.equals("PRESSURE")) ctx = new AnomalyContext("Pressure","HULL_B",3);
  *   ...  ← logica di business nel CLI (sbagliato)
- *
+ * <p>
  * CON Factory: il CLI chiama solo AnomalyFactory.create("REACTOR").
- * La logica di business (che severity ha REACTOR? che sistema?) sta qui.
+ * La logica di business (che severity ha REACTOR? Che sistema?) Sta qui.
  * Open/Closed: aggiungere "SOLAR_STORM" → aggiungo un case qui, nient'altro cambia.
- *
+ * <p>
  * CLASSE UTILITY:
- * - Costruttore private → non istanziabile (come java.util.Collections, java.util.Arrays)
+ * - Costruttore private → non instantiable (come java.util.Collections, java.util.Arrays)
  * - Solo metodi static → si usa come AnomalyFactory.create(...), senza new
  * - final → non estendibile (non ha senso estendere una utility class)
  */
@@ -29,18 +29,18 @@ public final class AnomalyFactory {
 
     /**
      * Costruttore private: previene new AnomalyFactory().
-     * Non ha senso istanziare questa classe — contiene solo metodi static.
+     * Non ha senso stanziare questa classe — contiene solo metodi static.
      */
     private AnomalyFactory() {}
 
     /**
      * Crea un AnomalyContext per il tipo di anomalia richiesto.
-     *
-     * switch expression (Java 14+):
+     * <p>
+     * Switch expression (Java 14+):
      * - La freccia '->' evita il fall-through del vecchio switch
      * - Può restituire un valore direttamente
      * - Il compilatore verifica che tutti i casi siano coperti (+ default)
-     *
+     * <p>
      * .toUpperCase(): normalizzazione dell'input — "reactor" funziona come "REACTOR"
      * Questo è input sanitization.
      *

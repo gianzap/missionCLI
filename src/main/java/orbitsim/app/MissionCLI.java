@@ -64,7 +64,7 @@ public class MissionCLI {
         printBanner();
 
         //init logger
-        LogManager log = new LogManager("C:/Users/THINKPAD P17 G2/Desktop/logMission/HORUS-21-mission.log");
+        LogManager log = new LogManager("logs/HORUS-21-mission.log");
 
         anomalyPipeline = new DetectionHandler();
         anomalyPipeline.setNext(new AssessmentHandler())
@@ -158,7 +158,7 @@ public class MissionCLI {
 
             //transizione fase
             transitionTo(new LaunchPhase());
-            //aggiornamento stato vettore
+
 
             System.out.println("LAUNCH SEQUENCE IS STARTED!");
             log.appendLogInfo("launch sequence is started by the user ");
@@ -176,6 +176,7 @@ public class MissionCLI {
                 }
             }
             missionRunning = true;
+            missionStartMs = System.currentTimeMillis();
             System.out.println("Liftoff!We are taking off!");
             log.appendLogInfo("Liftoff OK");
 

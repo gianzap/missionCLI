@@ -9,7 +9,6 @@ import orbitsim.patterns.composite.SystemStatus;
 import orbitsim.patterns.observer.MissionEvent;
 import orbitsim.patterns.observer.MissionEventBus;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -20,9 +19,7 @@ import java.util.*;
 
 public class Spacecraft {
 
-    //dichiarazione variabili
-    private final String name = "HORUS-21";
-    private final MissionEventBus eventBus;
+    public final MissionEventBus eventBus;
     private double altitude = 0;
     private double velocity = 0;
     private double fuelPercent = 100.0;
@@ -33,9 +30,8 @@ public class Spacecraft {
     // Composite root
     private final SpacecraftModule root;
 
-    // Subsystems (foglie) — accesso diretto per simulazione
-    private final Subsystem propulsion, lifeSupport, navigation,
-            comms, reactor, rcs;
+    private final Subsystem lifeSupport;
+    private final Subsystem reactor;
 
 
     public Spacecraft(MissionEventBus eventBus) {
@@ -45,9 +41,10 @@ public class Spacecraft {
         root = new SpacecraftModule("ROOT", "HORUS-21 Systems");
 
         SpacecraftModule propModule = new SpacecraftModule("PROP", "Propulsion");
-        propulsion = new Subsystem("MAIN_ENG", "Main Engine",    "%thrust");
+        // Subsystems (foglie) — accesso diretto per simulazione
+        Subsystem propulsion = new Subsystem("MAIN_ENG", "Main Engine", "%thrust");
         reactor    = new Subsystem("REACTOR",  "Reactor Core",   "°C");
-        rcs        = new Subsystem("RCS",      "RCS Thrusters",  "%");
+        Subsystem rcs = new Subsystem("RCS", "RCS Thrusters", "%");
         reactor.setValue(280); rcs.setValue(100);
         propModule.add(propulsion); propModule.add(reactor); propModule.add(rcs);
 
@@ -58,8 +55,8 @@ public class Spacecraft {
         lifeModule.add(lifeSupport); lifeModule.add(co2);
 
         SpacecraftModule avionics = new SpacecraftModule("AVIONICS", "Avionics");
-        navigation = new Subsystem("NAV",   "Navigation Comp",  "accuracy%");
-        comms      = new Subsystem("COMMS", "Comm Array",       "dBm");
+        Subsystem navigation = new Subsystem("NAV", "Navigation Comp", "accuracy%");
+        Subsystem comms = new Subsystem("COMMS", "Comm Array", "dBm");
         navigation.setValue(99.8); comms.setValue(-85);
         avionics.add(navigation); avionics.add(comms);
 
@@ -144,9 +141,15 @@ public class Spacecraft {
     public double getAltitude()      { return altitude; }
     public double getVelocity()      { return velocity; }
     public SpacecraftModule getRoot(){ return root; }
-    public String getName()          { return name; }
+    public String getName()          { //dichiarazione variabili
+        return "HORUS-21"; }
 
 
+    public int getSnapshotCounter() {
+        return snapshotCounter;
+    }
 
-
+    public void setSnapshotCounter(int snapshotCounter) {
+        this.snapshotCounter = snapshotCounter;
+    }
 }

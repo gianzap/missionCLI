@@ -26,7 +26,7 @@ public class Subsystem implements SpacecraftComponent {
 
     /**
      * Costruttore: inizializza il subsystem in stato NOMINAL.
-     * value = 100.0 come default — override con setValue() se necessario.
+     * Value = 100.0 come default — override con setValue() se necessario.
      */
     public Subsystem(String id, String name, String unit) {
         this.id = id;
@@ -73,7 +73,7 @@ public class Subsystem implements SpacecraftComponent {
      * Una foglia non ha figli.
      * Collections.emptyList() restituisce una lista immutabile singleton —
      * non alloca un nuovo ArrayList ogni volta (efficiente).
-     * isLeaf() nella superclasse chiama getChildren().isEmpty() → true.
+     * isLeaf() nella superclass chiama getChildren().isEmpty() → true.
      */
     @Override public List<SpacecraftComponent> getChildren() {
         return Collections.emptyList();

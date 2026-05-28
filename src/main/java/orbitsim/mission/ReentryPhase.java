@@ -24,10 +24,13 @@ public class ReentryPhase implements MissionPhase{
 
     @Override
     public String onEnter() {
-        return "\n  *** REENTRY INTERFACE ***\n" +
-                "  Blackout comm window: 4 minutes\n" +
-                "  Heat shield temp: 1,650°C — nominal\n" +
-                "  ................ [SIGNAL LOST] ................\n";
+        return """
+                
+                  *** REENTRY INTERFACE ***
+                  Blackout comm window: 4 minutes
+                  Heat shield temp: 1,650°C — nominal
+                  ................ [SIGNAL LOST] ................
+                """;
     }
 
     @Override

@@ -1,18 +1,17 @@
 package orbitsim.patterns.composite;
 
 import orbitsim.exception.SystemFaultException;
-
 import java.util.List;
 
 /**
  * ═══════════════════════════════════════════════════════════════
  * PATTERN: Composite — Interfaccia Component
  * ═══════════════════════════════════════════════════════════════
- *
+ * <p>
  * Il Composite permette di trattare uniformemente:
  * - oggetti SINGOLI (Subsystem — foglie, es. "O2 Recycler")
  * - COMPOSIZIONI di oggetti (SpacecraftModule — nodi, es. "Life Support")
- *
+ * <p>
  * STRUTTURA nel progetto:
  *   SpacecraftModule "ARES-VII Systems"  ← Composite root
  *     SpacecraftModule "Propulsion"       ← nodo intermedio
@@ -25,9 +24,9 @@ import java.util.List;
  *     SpacecraftModule "Avionics"
  *       Subsystem "Navigation Comp"
  *       Subsystem "Comm Array"
- *
+ * <p>
  * PERCHÉ è utile?
- * root.getStatus() → propaga ai moduli → propaga ai subsystem
+ * Root.getStatus() → propaga ai moduli → propaga ai subsystem
  * Il chiamante non sa quanti livelli ci sono — tratta tutto uniformemente.
  * Aggiungere un nuovo modulo (es. "Scientific Instruments") non richiede
  * modificare nessun codice esistente.

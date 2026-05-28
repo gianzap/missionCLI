@@ -23,10 +23,13 @@ public class AbortPhase implements MissionPhase {
 
     @Override
     public String onEnter() {
-        return "\n  !!! ABORT ABORT ABORT !!!\n" +
-                "  Launch Abort System activated.\n" +
-                "  Crew capsule separation confirmed.\n" +
-                "  Parachutes nominal. Crew safe.\n";
+        return """
+                
+                  !!! ABORT ABORT ABORT !!!
+                  Launch Abort System activated.
+                  Crew capsule separation confirmed.
+                  Parachutes nominal. Crew safe.
+                """;
     }
 
     @Override

@@ -24,9 +24,12 @@ public class OrbitalPhase implements MissionPhase{
 
     @Override
     public String onEnter() {
-        return "\n  *** ORBITAL INSERTION CONFIRMED ***\n" +
-                "  Altitude: 402 km | Period: 92.5 min\n" +
-                "  All systems nominal. Mission phase: ORBITAL OPS\n";
+        return """
+                
+                  *** ORBITAL INSERTION CONFIRMED ***
+                  Altitude: 402 km | Period: 92.5 min
+                  All systems nominal. Mission phase: ORBITAL OPS
+                """;
     }
 
     @Override

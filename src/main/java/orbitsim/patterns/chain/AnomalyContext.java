@@ -13,9 +13,6 @@ import java.util.List;
  *  - arricchirlo con nuove informazioni (logAction)
  *  - modificare la severity se necessario
  *  - segnalare che la missione va abortita
- *
- * È un oggetto MUTABILE — si arricchisce attraverso la catena.
- * Opposto al Memento (immutabile).
  */
 public class AnomalyContext {
 
@@ -48,7 +45,7 @@ public class AnomalyContext {
      * Aggiunge un'azione al log E la stampa a video.
      * Chiamato dagli handler per rendere visibile nella demo
      * ogni step della pipeline Chain of Responsibility.
-     * System.out.println qui è intenzionale: è output narrativo del CLI.
+     * System.out.println qui è intenzionale: è uscita narrativa del CLI.
      */
     public void logAction(String action) {
         actionLog.add(action);

@@ -23,10 +23,13 @@ public class SplashdownPhase implements MissionPhase{
 
     @Override
     public String onEnter() {
-        return "\n  *** SPLASHDOWN CONFIRMED ***\n" +
-                "  Recovery team en route.\n" +
-                "  HORUS-21 mission: SUCCESS\n" +
-                "  Mission elapsed time: see REPORT\n";
+        return """
+                
+                  *** SPLASHDOWN CONFIRMED ***
+                  Recovery team en route.
+                  HORUS-21 mission: SUCCESS
+                  Mission elapsed time: see REPORT
+                """;
     }
 
     @Override

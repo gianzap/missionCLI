@@ -23,9 +23,12 @@ public class AscentPhase implements MissionPhase{
 
     @Override
     public String onEnter() {
-        return "\n  Staging complete. Second stage ignition confirmed.\n" +
-                "  Altitude: 120 km | Velocity: 7,800 m/s\n" +
-                "  Approaching orbital insertion burn...\n";
+        return """
+                
+                  Staging complete. Second stage ignition confirmed.
+                  Altitude: 120 km | Velocity: 7,800 m/s
+                  Approaching orbital insertion burn...
+                """;
     }
 
     @Override

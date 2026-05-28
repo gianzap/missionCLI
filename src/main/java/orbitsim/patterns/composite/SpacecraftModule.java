@@ -28,8 +28,6 @@ public class SpacecraftModule implements SpacecraftComponent {
                 .orElse(SystemStatus.NOMINAL);
     }
 
-    public void setStatus(SystemStatus s) { this.overrideStatus = s; }
-
     @Override
     public String getStatusReport() {
         StringBuilder sb = new StringBuilder();
