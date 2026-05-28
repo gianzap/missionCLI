@@ -1,7 +1,6 @@
 package orbitsim.app;
 
 //import packages
-import orbitsim.memento.SnapshotCaretaker;
 import orbitsim.mission.*;
 import orbitsim.exception.OrbitSimException;
 import orbitsim.patterns.observer.MissionEventBus;
@@ -24,14 +23,13 @@ import static java.lang.Thread.sleep;
 public class MissionCLI {
     //instances
     static boolean missionRunning = false;
-    //todo private final SnapshotCaretaker snapshots    = new SnapshotCaretaker();
     private final MissionEventBus eventBus      = new MissionEventBus();
-    private static long missionStartMs;
     private static MissionPhase currentPhase            = null;
-    private final Spacecraft spacecraft     = new Spacecraft(eventBus);
+    private final Spacecraft spacecraft = new Spacecraft(eventBus);
     //init scanner input utente
     Scanner scanner1 = new Scanner(System.in);
 
+    private long missionStartMs;
 
 
     //banner iniziale
@@ -51,20 +49,17 @@ public class MissionCLI {
     }
 
 
-    public void main(String[] args) throws InterruptedException {
+
+    void main() {
 
 
-          System.out.print("System loading");
-          //simulazione loading
-          loadingAnim();
-          printBanner();
-
+        System.out.print("System loading");
+        //simulazione loading
+        loadingAnim();
+        printBanner();
 
         //init logger
         LogManager log = new LogManager("C:/Users/THINKPAD P17 G2/Desktop/logMission/HORUS-21-mission.log");
-
-
-
 
 
 
@@ -73,12 +68,12 @@ public class MissionCLI {
 
               // 1. Leggi l'input e dividilo in parole usando lo spazio come separatore
               String completeInput = scanner1.nextLine().trim();
-              String[] parts = completeInput.split("\\s+"); // Divide la stringa ad ogni spazio
+              String[] parts = completeInput.split("\\s+"); // Divide la stringa a ogni spazio
 
               // 2. La prima parola è il comando reale (es: "MANEUVER")
               String command = parts[0].toUpperCase();
 
-              // 3. Creiamo l'array 'args' con le parole successive (es: "REBOOST")
+              // 3. Creiamo l' array 'args' con le parole successive (es: "REBOOST")
               String[] argsCmd = new String[parts.length - 1];
               System.arraycopy(parts, 1, argsCmd, 0, argsCmd.length);
               try {
@@ -98,15 +93,6 @@ public class MissionCLI {
                       case "MANEUVER","MANEUVER REBOOST","MANEUVER HOHMANN":
                           maneuver(argsCmd,log);
                           break;
-//                      case "SNAPSHOT":
-//                          snapshot();
-//                          break;
-                      case "SNAPSHOTS":
-                          listSnapshots();
-                          break;
-                      case "RESTORE":
-                          restore();
-                          break;
                       case "SCAN":
                           scan();
                           break;
@@ -115,9 +101,6 @@ public class MissionCLI {
                           break;
                       case "REENTRY":
                           reentry();
-                          break;
-                      case "REPORT":
-                          report();
                           break;
                       case "ABORT":
                           abort(log);
@@ -154,7 +137,7 @@ public class MissionCLI {
 
     }
 
-    private void launch(LogManager log) throws OrbitSimException, InterruptedException {
+    private void launch(LogManager log) throws OrbitSimException {
 
 
 
@@ -162,7 +145,6 @@ public class MissionCLI {
         if (missionRunning) {
             System.out.println("  Mission already in progress.");
             log.appendLogWarn("Mission already in progress");
-            return;
         }else{
 
             //transizione fase
@@ -213,13 +195,10 @@ public class MissionCLI {
 
     }
 
-    private void report() throws OrbitSimException {
-
-    }
 
     private void reentry() {
        try {
-           requirePhase(OrbitalPhase.class, "REENTRY requires orbital phase.");
+           requirePhase("REENTRY requires orbital phase.");
 
            loadingAnim();
 
@@ -231,7 +210,6 @@ public class MissionCLI {
 
        } catch (OrbitSimException e) {
            System.err.println(e.getMessage());
-           return;
 
        }
 
@@ -240,20 +218,13 @@ public class MissionCLI {
     private static void injectAnomaly() {
     }
 
-    private static void restore() {
-    }
-
     private static void scan() {
     }
 
-    private static void listSnapshots() {
-    }
 
-    private static void snapshot() {
-    }
 
     private void maneuver(String[] args, LogManager log) throws OrbitSimException {
-        requirePhase(OrbitalPhase.class, "MANEUVER requires orbital phase.");
+        requirePhase("MANEUVER requires orbital phase.");
         String type = args.length > 0 ? args[0].toUpperCase() : "HOHMANN";
         switch (type) {
             case "HOHMANN" -> {
@@ -282,11 +253,14 @@ public class MissionCLI {
         long elapsed = missionRunning ? (System.currentTimeMillis() - missionStartMs) / 1000 : 0;
         //stampa formattata con segnaposti
         System.out.printf(
-                "\n  ── MISSION STATUS ──\n" +
-                        "  Spacecraft: %s\n" +
-                        "  Phase:      %s — %s\n" +
-                        "  Overall:    %s\n" +
-                        "  Elapsed:    %ds\n",
+                """
+                        
+                          ── MISSION STATUS ──
+                          Spacecraft: %s
+                          Phase:      %s — %s
+                          Overall:    %s
+                          Elapsed:    %ds
+                        """,
                 spacecraft.getName(),
                 phase,
                 currentPhase != null ? currentPhase.getDescription() : "Awaiting launch",
@@ -305,7 +279,7 @@ public class MissionCLI {
             System.out.println("  LAUNCH         — Start HORUS-21 mission");
         } else {
             for (String c : currentPhase.availableCommands()) {
-                System.out.println("  " + padRight(c, 18) + commandDesc(c));
+                System.out.println("  " + padRight(c) + commandDesc(c));
             }
         }
         System.out.println("  EXIT           — Quit mission control");
@@ -338,9 +312,9 @@ public class MissionCLI {
     }
 
     //gestisco i requisiti di cambio fase e relative eccezioni
-    private void requirePhase(Class<? extends MissionPhase> phaseClass, String msg)
+    private void requirePhase(String msg)
             throws OrbitSimException {
-        if (currentPhase == null || !phaseClass.isInstance(currentPhase))
+        if (!(currentPhase instanceof OrbitalPhase))
             throw new OrbitSimException(msg + " Current phase: " +
                     (currentPhase != null ? currentPhase.getName() : "PRE-LAUNCH"));
     }
@@ -367,8 +341,8 @@ public class MissionCLI {
         }
     }
     //formattazione help
-    private String padRight(String s, int n) {
-        return String.format("%-" + n + "s", s);
+    private String padRight(String s) {
+        return String.format("%-" + 18 + "s", s);
     }
 }
 

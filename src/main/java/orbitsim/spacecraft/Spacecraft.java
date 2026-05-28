@@ -42,7 +42,7 @@ public class Spacecraft {
         this.eventBus = eventBus;
 
         // Costruzione gerarchia Composite
-        root = new SpacecraftModule("ROOT", "ARES-VII Systems");
+        root = new SpacecraftModule("ROOT", "HORUS-21 Systems");
 
         SpacecraftModule propModule = new SpacecraftModule("PROP", "Propulsion");
         propulsion = new Subsystem("MAIN_ENG", "Main Engine",    "%thrust");
@@ -79,13 +79,13 @@ public class Spacecraft {
     /** TELEMETRY command output. */
     public String getTelemetry() {
         return String.format(
-                        "\n  ╔══════════════════ TELEMETRY ════════════════════╗\n" +
-                        "    ║  Altitude:    %6.1f km                          ║\n" +
-                        "    ║  Velocity:    %6.1f m/s                         ║\n" +
-                        "    ║  Fuel:        %5.1f%%                           ║\n" +
-                        "    ║  Reactor:     %6.1f°C                           ║\n" +
-                        "    ║  Life Support: %-28s                            ║\n" +
-                        "    ╚═════════════════════════════════════════════════╝\n",
+                "\n  ╔══════════════════ TELEMETRY ════════════════════╗\n" +
+                        "  ║  Altitude:     %6.1f km                        ║\n" +
+                        "  ║  Velocity:     %6.1f m/s                       ║\n" +
+                        "  ║  Fuel:         %6.1f%%                          ║\n" +
+                        "  ║  Reactor:      %6.1f°C                         ║\n" +
+                        "  ║  Life Support: %-32s ║\n" +
+                        "  ╚═════════════════════════════════════════════════╝\n",
                 altitude, velocity, fuelPercent, reactorTemp, lifeSupport.getStatus());
     }
     /** SYSTEMS command output — Composite in azione. */
@@ -106,25 +106,6 @@ public class Spacecraft {
         if (c.isLeaf()) acc.add(c);
         else c.getChildren().forEach(child -> collectLeaves(child, acc));
     }
-    /*
-    // SNAPSHOT command — crea Memento dello stato corrente.
-    public MissionSnapshot takeSnapshot(String label, String note) {
-        Map<String, String> statuses = new LinkedHashMap<>();
-        Iterator<SpacecraftComponent> it = systemIterator();
-        while (it.hasNext()) {
-            SpacecraftComponent s = it.next();
-            statuses.put(s.getId(), s.getStatus().name());
-        }
-        return new MissionSnapshot(
-                "SNP-" + String.format("%03d", snapshotCounter++),
-                label, getCurrentPhaseName(),
-                altitude, velocity, fuelPercent, reactorTemp,
-                statuses, LocalDateTime.now(), note
-        );
-        }
-        */
-
-
 
 
     private String getCurrentPhaseName() { return "ORBITAL"; }
