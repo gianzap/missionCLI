@@ -4,6 +4,8 @@ package orbitsim.app;
 import orbitsim.memento.SnapshotCaretaker;
 import orbitsim.mission.*;
 import orbitsim.exception.OrbitSimException;
+import orbitsim.patterns.observer.MissionEventBus;
+import orbitsim.spacecraft.Spacecraft;
 import orbitsim.util.LogManager;
 
 import java.util.Scanner;
@@ -22,10 +24,12 @@ import static java.lang.Thread.sleep;
 public class MissionCLI {
     //instances
     static boolean missionRunning = false;
-    private final SnapshotCaretaker snapshots    = new SnapshotCaretaker();
-
+    //todo private final SnapshotCaretaker snapshots    = new SnapshotCaretaker();
+    private final MissionEventBus eventBus      = new MissionEventBus();
     private static long missionStartMs;
-    private MissionPhase currentPhase            = null;
+    private static MissionPhase currentPhase            = null;
+    private final Spacecraft spacecraft     = new Spacecraft(eventBus);
+    //init scanner input utente
     Scanner scanner1 = new Scanner(System.in);
 
 
@@ -59,7 +63,7 @@ public class MissionCLI {
         //init logger
         LogManager log = new LogManager("C:/Users/THINKPAD P17 G2/Desktop/logMission/HORUS-21-mission.log");
 
-        //inizializiamo scanner input utente
+
 
 
 
@@ -274,7 +278,24 @@ public class MissionCLI {
     private static void telemetry() {
     }
 
-    private static void status() {
+    private void status() {
+        String phase = currentPhase != null ? currentPhase.getName() : "PRE-LAUNCH";
+        long elapsed = missionRunning ? (System.currentTimeMillis() - missionStartMs) / 1000 : 0;
+        //stampa formattata con segnaposti
+        System.out.printf(
+                "\n  ── MISSION STATUS ──\n" +
+                        "  Spacecraft: %s\n" +
+                        "  Phase:      %s — %s\n" +
+                        "  Overall:    %s\n" +
+                        "  Elapsed:    %ds\n",
+                spacecraft.getName(),
+                phase,
+                currentPhase != null ? currentPhase.getDescription() : "Awaiting launch",
+                spacecraft.getOverallStatus(),
+                elapsed);
+        if (currentPhase != null) {
+            System.out.println("  Commands:   " + String.join(", ", currentPhase.availableCommands()));
+        }
     }
 
 

@@ -1,34 +1,40 @@
-package orbitsim.patterns.composite;
+package orbitsim.composite;
 
 import orbitsim.exception.SystemFaultException;
-import java.util.*;
+import orbitsim.patterns.composite.SpacecraftComponent;
+import orbitsim.patterns.composite.SystemStatus;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
  * Nodo composito — aggrega subsystem.
  * getStatus() aggrega lo stato peggiore dei figli.
  */
-public class SpacecraftModule implements SpacecraftComponent {
+public class SpacecraftModule implements orbitsim.patterns.composite.SpacecraftComponent {
     private static final Logger LOG = Logger.getLogger(SpacecraftModule.class.getName());
     private final String id, name;
-    private final List<SpacecraftComponent> children = new ArrayList<>();
-    private SystemStatus overrideStatus = null;
+    private final List<orbitsim.patterns.composite.SpacecraftComponent> children = new ArrayList<>();
+    private orbitsim.patterns.composite.SystemStatus overrideStatus = null;
 
     public SpacecraftModule(String id, String name) { this.id = id; this.name = name; }
 
-    public void add(SpacecraftComponent c) { children.add(c); }
+    public void add(orbitsim.patterns.composite.SpacecraftComponent c) { children.add(c); }
 
     @Override
-    public SystemStatus getStatus() {
+    public orbitsim.patterns.composite.SystemStatus getStatus() {
         if (overrideStatus != null) return overrideStatus;
-        if (children.isEmpty()) return SystemStatus.NOMINAL;
+        if (children.isEmpty()) return orbitsim.patterns.composite.SystemStatus.NOMINAL;
         return children.stream()
-                .map(SpacecraftComponent::getStatus)
-                .max(Comparator.comparingInt(SystemStatus::ordinal))
-                .orElse(SystemStatus.NOMINAL);
+            .map(orbitsim.patterns.composite.SpacecraftComponent::getStatus)
+            .max(Comparator.comparingInt(orbitsim.patterns.composite.SystemStatus::ordinal))
+            .orElse(orbitsim.patterns.composite.SystemStatus.NOMINAL);
     }
 
-    public void setStatus(SystemStatus s) { this.overrideStatus = s; }
+    public void setStatus(orbitsim.patterns.composite.SystemStatus s) { this.overrideStatus = s; }
 
     @Override
     public String getStatusReport() {
@@ -41,7 +47,7 @@ public class SpacecraftModule implements SpacecraftComponent {
     @Override
     public void shutdown() throws SystemFaultException {
         LOG.warning("Shutting down module: " + name);
-        for (SpacecraftComponent c : children) c.shutdown();
+        for (orbitsim.patterns.composite.SpacecraftComponent c : children) c.shutdown();
         overrideStatus = SystemStatus.OFFLINE;
     }
 
