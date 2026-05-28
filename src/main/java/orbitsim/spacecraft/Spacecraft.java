@@ -1,8 +1,7 @@
 package orbitsim.spacecraft;
 
 
-import orbitsim.composite.SubSystem;
-import orbitsim.observer.MissionEventBus;
+
 
 
 /**
@@ -22,8 +21,7 @@ public class Spacecraft {
     private int snapshotCounter = 1;
 
 
-    public Spacecraft(MissionEventBus eventBus) {
-    }
+
 
 
     public void setLaunchState() {

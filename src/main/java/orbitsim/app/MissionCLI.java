@@ -1,12 +1,9 @@
 package orbitsim.app;
 
 //import packages
+import orbitsim.memento.SnapshotCaretaker;
 import orbitsim.mission.*;
-import orbitsim.observer.MissionEventBus;
 import orbitsim.exception.OrbitSimException;
-import orbitsim.observer.BlackBoxObserver;
-import orbitsim.observer.ConsoleAlertObserver;
-import orbitsim.spacecraft.Spacecraft;
 import orbitsim.util.LogManager;
 
 import java.util.Scanner;
@@ -25,13 +22,13 @@ import static java.lang.Thread.sleep;
 public class MissionCLI {
     //instances
     static boolean missionRunning = false;
-    private final MissionEventBus eventBus      = new MissionEventBus();
-    private final BlackBoxObserver blackBox      = new BlackBoxObserver();
-    private final ConsoleAlertObserver console   = new ConsoleAlertObserver();
+    private final SnapshotCaretaker snapshots    = new SnapshotCaretaker();
 
     private static long missionStartMs;
     private MissionPhase currentPhase            = null;
     Scanner scanner1 = new Scanner(System.in);
+
+
 
     //banner iniziale
     private static void printBanner() {
@@ -51,6 +48,8 @@ public class MissionCLI {
 
 
     public void main(String[] args) throws InterruptedException {
+
+
           System.out.print("System loading");
           //simulazione loading
           loadingAnim();
@@ -106,7 +105,7 @@ public class MissionCLI {
                           report();
                           break;
                       case "ABORT":
-                          abort();
+                          abort(log);
                           break;
                       case "HELP":
                           help();
@@ -192,10 +191,15 @@ public class MissionCLI {
         System.out.println("\n  Mission Control offline. Goodbye.\n");
     }
 
-    private static void abort() {
+    private void abort(LogManager log) throws OrbitSimException {
+        System.out.println("\n  !!! ABORT COMMAND RECEIVED !!!");
+        transitionTo(new AbortPhase());
+        log.appendLogSevere("ABORT executed by operator");
+
     }
 
-    private static void report() {
+    private void report() throws OrbitSimException {
+
     }
 
     private void reentry() {

@@ -31,12 +31,15 @@ public class LogManager {
         LOG.log(Level.INFO,textContent);
     }
 
-    public void closeLog(){
-        handler.close();
-    }
-
-
     public void appendLogWarn(String textContent) {
         LOG.log(Level.WARNING,textContent);
+    }
+
+    public void appendLogSevere(String textContent) {
+        LOG.log(Level.SEVERE,textContent);
+    }
+
+    public void closeLog(){
+        handler.close();
     }
 }
